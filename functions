@@ -1,0 +1,25 @@
+def lxd_status_check(endpoint, name):
+
+    #check if container exist
+    containers = container_list(endpoint)
+    if name in containers:
+        e_state = str(endpoint) + '/' + name + '/state'
+        client = LXDAPI(e_state)
+        response = client.get()
+        print('Getting {} status'.format(name))
+        parsed_json = response.json()
+
+        ip_address = parsed_json['metadata']['network']['eth0']['addresses'][0]['address']
+        eth_state = parsed_json['metadata']['network']['eth0']['state']
+        print(ip_address, eth_state)
+
+        if eth_state != 'up':
+            print("Please check Network status")
+            return False
+
+        #get operation status
+
+    else:
+        print("This container doesn't exist")
+        return False
+    return True
